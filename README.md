@@ -4,4 +4,4 @@
 
 MERN Stack Semester Project
 
-Add node modules in the server and my-project.
+Add node modules in the main directory, server and my-project.
