@@ -4,12 +4,14 @@ import React, { useState, useEffect } from 'react';
 
 const CategoryForm = ({ handleSubmit, initialValues = {} }) => {
     const [name, setName] = useState(initialValues.name || '');
+    const [description, setDescription] = useState(initialValues.description || '');
     const [photo, setPhoto] = useState(null);
     const [error, setError] = useState('');
 
     useEffect(() => {
-        if (initialValues.name) {
+        if (initialValues.name && initialValues.description) {
             setName(initialValues.name);
+            setDescription(initialValues.description);
         }
     }, [initialValues]);
 
@@ -17,6 +19,7 @@ const CategoryForm = ({ handleSubmit, initialValues = {} }) => {
         e.preventDefault();
         const formData = new FormData();
         formData.append('name', name.trim());
+        formData.append('description', description.trim());
         if (photo) {
             formData.append('photo', photo);
         }
@@ -52,7 +55,7 @@ const CategoryForm = ({ handleSubmit, initialValues = {} }) => {
                                 </div>
                             ) : initialValues._id ? (
                                 <div>
-                                    <img 
+                                    <img
                                         src={`http://localhost:3000/api/v1/category/category-photo/${initialValues._id}`}
                                         alt="Current category"
                                         width="100"
@@ -81,6 +84,26 @@ const CategoryForm = ({ handleSubmit, initialValues = {} }) => {
                     />
                     {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
                 </div>
+
+                <div className="mb-4">
+                    <label htmlFor="categoryDescription" className="block text-sm font-medium text-gray-700 mb-2">
+                        Category Description
+                    </label>
+                    <input
+                        type="text"
+                        id="categoryDescription"
+                        className={`w-full px-3 py-2 border rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 ${error ? 'border-red-500' : 'border-gray-300'}`}
+                        placeholder="Enter category description"
+                        value={description}
+                        onChange={(e) => {
+                            setDescription(e.target.value);
+                            setError('');
+                        }}
+                        required
+                    />
+                    {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
+                </div>
+
                 <button
                     type="submit"
                     className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 flex items-center justify-center"

@@ -1,16 +1,20 @@
 const mongoose = require('mongoose');
 
 const categorySchema = new mongoose.Schema({
-    name:{
+    name: {
         type: String,
         required: true,
         unique: true
     },
-    slug:{
+    description: {
+        type: String,
+        required: true
+    },
+    slug: {
         type: String,
         lowercase: true
     },
-    photo:{
+    photo: {
         data: Buffer,
         contentType: String,
     },
@@ -18,6 +22,6 @@ const categorySchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     }
-},{timestamps:true})
+}, { timestamps: true });
 
 module.exports = mongoose.model('categoryModel', categorySchema);
