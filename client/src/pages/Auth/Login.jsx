@@ -5,6 +5,7 @@ import axios from 'axios';
 import { useNavigate, Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../../context/auth';
 import Alert from '../../components/Layout/Alert';
+import { API_BASE_URL } from '../../main';
 
 const Login = () => {
     const [email, setEmail] = useState("")
@@ -19,7 +20,7 @@ const Login = () => {
         setError(null);
         setSuccess(null);
         try {
-            const res = await axios.post('http://localhost:3000/api/v1/auth/login', { email, password });
+            const res = await axios.post(`${API_BASE_URL}/api/v1/auth/login`, { email, password });
             if (res.data.success) {
                 setSuccess("Login successful! Redirecting to homepage...");
                 setTimeout(() => navigate('/'), 2000);
@@ -74,8 +75,8 @@ const Login = () => {
                         <form className="space-y-6" onSubmit={handleSubmit}>
                             <div>
                                 <div className='flex justify-center items-center mb-4'>
-                                   <Link to='/login' className='border border-black px-3 py-1 w-20 text-center rounded-l-xl bg-black text-white'>User</Link>
-                                   <Link to='/adminlogin' className='border border-black px-3 py-1 w-20 text-center rounded-r-xl'>Admin</Link>
+                                    <Link to='/login' className='border border-black px-3 py-1 w-20 text-center rounded-l-xl bg-black text-white'>User</Link>
+                                    <Link to='/adminlogin' className='border border-black px-3 py-1 w-20 text-center rounded-r-xl'>Admin</Link>
                                 </div>
                                 <div className="mt-1 relative rounded-md shadow-sm">
 

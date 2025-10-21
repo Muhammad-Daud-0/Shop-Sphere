@@ -4,6 +4,7 @@ import { Mail, Lock, ShoppingBag, FileQuestion } from 'lucide-react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom'
 import Alert from '../../components/Layout/Alert';
+import { API_BASE_URL } from '../../main';
 
 const ForgotPassword = () => {
     const [email, setEmail] = useState("")
@@ -11,16 +12,16 @@ const ForgotPassword = () => {
     const [answer, setAnswer] = useState("")
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(null);
-    const navigate = useNavigate(); 
+    const navigate = useNavigate();
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError(null);
         setSuccess(null);
         try {
-            const res = await axios.post('http://localhost:3000/api/v1/auth/forgot', { email, answer, newPassword });
+            const res = await axios.post(`${API_BASE_URL}/api/v1/auth/forgot`, { email, answer, newPassword });
             if (res.data.success) {
                 setSuccess("Password was successfully changed");
-                setTimeout(() => navigate('/login'), 3000); 
+                setTimeout(() => navigate('/login'), 3000);
             }
             else {
                 setError(res.data.message);
@@ -54,7 +55,7 @@ const ForgotPassword = () => {
                         </div>
                     </div>
                     <div className='w-1/2 py-2 h-80 flex flex-col justify-center items-center'>
-                    {error && <Alert type="error" message={error} onClose={() => setError(null)} />}
+                        {error && <Alert type="error" message={error} onClose={() => setError(null)} />}
                         {success && <Alert type="success" message={success} onClose={() => setSuccess(null)} />}
                         <form className="space-y-6" onSubmit={handleSubmit}>
                             <div>
@@ -125,7 +126,7 @@ const ForgotPassword = () => {
                                     type="submit"
                                     className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                                 >
-                                   Reset
+                                    Reset
                                 </button>
 
                             </div>

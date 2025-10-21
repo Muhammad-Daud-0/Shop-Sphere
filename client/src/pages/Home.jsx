@@ -7,6 +7,7 @@ import ProductCard from '../components/Layout/ProductCard';
 import CategorySlider from '../components/Layout/CategorySlider';
 import axios from 'axios'
 import { Link } from 'react-router-dom';
+import { API_BASE_URL } from '../main';
 
 const features = [
   {
@@ -54,7 +55,7 @@ const Home = () => {
 
   const getAllProducts = async () => {
     try {
-      const { data } = await axios.get('http://localhost:3000/api/v1/product/get-product');
+      const { data } = await axios.get(`${API_BASE_URL}/api/v1/product/get-product`);
       if (data?.success) {
         setProducts(data.products.slice(0, 6));
       }
@@ -65,7 +66,7 @@ const Home = () => {
 
   const getAllCategories = async () => {
     try {
-      const { data } = await axios.get('http://localhost:3000/api/v1/category/get-category');
+      const { data } = await axios.get(`${API_BASE_URL}/api/v1/category/get-category`);
       if (data?.success) {
         setCategories(data.categories);
       }
@@ -142,11 +143,11 @@ const Home = () => {
         </div>
 
         <CategorySlider categories={categories} />
-        <div className='text-center -mt-2'> 
-            <Link to={'/dashboard/categories'} className='text-indigo-700 hover:underline'> <button className="bg-indigo-700 text-white px-8 py-3 rounded-lg text-lg font-semibold shadow-lg hover:bg-indigo-500 transition duration-300">
+        <div className='text-center -mt-2'>
+          <Link to={'/dashboard/categories'} className='text-indigo-700 hover:underline'> <button className="bg-indigo-700 text-white px-8 py-3 rounded-lg text-lg font-semibold shadow-lg hover:bg-indigo-500 transition duration-300">
             See All Categories
           </button></Link>
-          </div>
+        </div>
 
         <div className="mb-12">
           <h2 className="text-2xl font-bold mb-6">Featured Products</h2>
@@ -161,10 +162,10 @@ const Home = () => {
               ))
             )}
           </div>
-          <div className='text-center mt-7'> 
+          <div className='text-center mt-7'>
             <Link to={'/dashboard/products'} className='text-indigo-700 hover:underline'> <button className="bg-indigo-700 text-white px-8 py-3 rounded-lg text-lg font-semibold shadow-lg hover:bg-indigo-500 transition duration-300">
-            See More Products
-          </button></Link>
+              See More Products
+            </button></Link>
           </div>
 
 

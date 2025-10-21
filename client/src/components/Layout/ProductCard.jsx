@@ -6,6 +6,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Toaster, toast } from 'react-hot-toast';
 import { useCart } from '../../context/CartContext';
 import { useLike } from '../../context/FavouriteContext';
+import { API_BASE_URL } from '../../main';
 
 const ProductCard = ({ product }) => {
   const [cart, setCart] = useCart();
@@ -19,19 +20,20 @@ const ProductCard = ({ product }) => {
   };
 
   return (
-    <div 
+    <div
       className="bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 cursor-pointer"
       onClick={handleCardClick}
     >
       <Toaster position="top-center" />
       <div className="relative">
         <img
-          src={`http://localhost:3000/api/v1/product/product-photo/${product._id}`}
+          src={`${API_BASE_URL}/api/v1/product/product-photo/${product._id}`}
           alt={product.name}
           className="w-full h-64 object-cover rounded-t-lg"
         />
-        <button onClick={()=>{setLike([...like,product])
-          localStorage.setItem('likes', JSON.stringify([...like,product])); 
+        <button onClick={() => {
+          setLike([...like, product])
+          localStorage.setItem('likes', JSON.stringify([...like, product]));
           toast.success("Product added to favourites")
         }} className="absolute top-4 right-4 p-2 bg-white rounded-full hover:bg-gray-100">
           <Heart className="h-5 w-5 text-gray-600" />
@@ -43,26 +45,28 @@ const ProductCard = ({ product }) => {
         <div className="flex justify-between items-center">
           <span className="text-xl font-bold text-indigo-600 ">${product.price}</span>
           <div className='flex justify-center items-center gap-1'>
-              <button onClick={()=> {setCart([...cart,product])
-              localStorage.setItem('cart', JSON.stringify([...cart,product])); 
+            <button onClick={() => {
+              setCart([...cart, product])
+              localStorage.setItem('cart', JSON.stringify([...cart, product]));
               toast.success("Product added to cart.Go to Cart to Checkout ")
-              }}
+            }}
               className="flex items-center gap-2 bg-indigo-600 text-white px-3 py-2 rounded-lg hover:bg-indigo-700 transition-colors">
-                <Store className="h-5 w-5" />
-                Buy
-              </button>
-              <button onClick={()=> {setCart([...cart,product])
-              localStorage.setItem('cart', JSON.stringify([...cart,product]));
-                toast.success("Product added to cart successfully")
-              }} className="flex items-center gap-2 bg-indigo-600 text-white px-3 py-2 rounded-lg hover:bg-indigo-700 transition-colors">
-                <ShoppingCart className="h-5 w-5" />
-                Cart
-              </button>
+              <Store className="h-5 w-5" />
+              Buy
+            </button>
+            <button onClick={() => {
+              setCart([...cart, product])
+              localStorage.setItem('cart', JSON.stringify([...cart, product]));
+              toast.success("Product added to cart successfully")
+            }} className="flex items-center gap-2 bg-indigo-600 text-white px-3 py-2 rounded-lg hover:bg-indigo-700 transition-colors">
+              <ShoppingCart className="h-5 w-5" />
+              Cart
+            </button>
           </div>
         </div>
       </div>
     </div>
-    
+
   );
 };
 

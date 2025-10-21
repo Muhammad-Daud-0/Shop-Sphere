@@ -4,6 +4,7 @@ import { useLocation } from 'react-router-dom';
 import AdminLayout from '../../components/Layout/AdminLayout';
 import { ArrowLeft, Package, DollarSign, Truck, ShoppingCart } from 'lucide-react';
 import { Toaster } from 'react-hot-toast';
+import { API_BASE_URL } from '../../main';
 
 const ProductPage = () => {
   const location = useLocation();
@@ -46,7 +47,7 @@ const ProductPage = () => {
               <div className="aspect-square rounded-lg overflow-hidden bg-gray-100">
                 {product.photo ? (
                   <img
-                    src={`http://localhost:3000/api/v1/product/product-photo/${product._id}`}
+                    src={`${API_BASE_URL}/api/v1/product/product-photo/${product._id}`}
                     alt={product.name}
                     className="w-full h-full object-cover"
                   />

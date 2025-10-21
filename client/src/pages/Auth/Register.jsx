@@ -1,11 +1,12 @@
 /* eslint-disable no-undef */
 /* eslint-disable no-unused-vars */
 import React, { useState } from 'react';
-import { User, Mail, Lock, Phone, MapPin, ShoppingBag,  FileQuestion } from 'lucide-react';
+import { User, Mail, Lock, Phone, MapPin, ShoppingBag, FileQuestion } from 'lucide-react';
 import Layout from '../../components/Layout/Layout';
 import Alert from '../../components/Layout/Alert';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom'
+import { API_BASE_URL } from '../../main';
 
 const Register = () => {
     const [name, setName] = useState("")
@@ -19,10 +20,10 @@ const Register = () => {
     const navigate = useNavigate();
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setError(null); 
+        setError(null);
         setSuccess(null);
         try {
-            const res = await axios.post('http://localhost:3000/api/v1/auth/register', { name, email, password, phone, address, answer });
+            const res = await axios.post(`${API_BASE_URL}/api/v1/auth/register`, { name, email, password, phone, address, answer });
             if (res.data.success) {
                 setSuccess("Registration successful! Redirecting to homepage...");
                 setTimeout(() => navigate('/'), 3000);
@@ -187,7 +188,7 @@ const Register = () => {
                                     />
                                 </div>
 
-                                
+
 
                             </div>
 

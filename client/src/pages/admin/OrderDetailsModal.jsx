@@ -5,6 +5,7 @@ import { Table, Button, Modal, Input, Spin } from 'antd';
 import { toast } from 'react-toastify';
 import AdminMenu from '../../components/Layout/AdminMenu';
 import AdminLayout from '../../components/Layout/AdminLayout';
+import { API_BASE_URL } from '../../main';
 
 const OrdersAdmin = () => {
     const [orders, setOrders] = useState([]);
@@ -16,7 +17,7 @@ const OrdersAdmin = () => {
 
     const getBuyerDetails = async (buyerId) => {
         try {
-            const { data } = await axios.get(`http://localhost:3000/api/v1/auth/user/${buyerId}`);
+            const { data } = await axios.get(`${API_BASE_URL}/api/v1/auth/user/${buyerId}`);
             if (data?.success) {
                 setBuyers((prevBuyers) => ({
                     ...prevBuyers,
@@ -31,7 +32,7 @@ const OrdersAdmin = () => {
     const getAllOrders = async () => {
         try {
             setLoading(true);
-            const { data } = await axios.get('http://localhost:3000/api/v1/order/get-all-orders');
+            const { data } = await axios.get(`${API_BASE_URL}/api/v1/order/get-all-orders`);
             if (data?.success) {
                 setOrders(data.orders);
             }

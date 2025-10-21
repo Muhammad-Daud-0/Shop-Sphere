@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 import Alert from '../../components/Layout/Alert';
 import { ShoppingBag, User, Lock } from 'lucide-react';
+import { API_BASE_URL } from '../../main';
 
 
 const AdminLogin = () => {
@@ -18,7 +19,7 @@ const AdminLogin = () => {
         setError(null);
         setSuccess(null);
         try {
-            const res = await axios.post('http://localhost:3000/api/v1/auth/admin', { name, password });
+            const res = await axios.post(`${API_BASE_URL}/api/v1/auth/admin`, { name, password });
             if (res.data.success) {
                 setSuccess("Login successful! Redirecting to admin dashboard...");
                 localStorage.setItem('adminToken', res.data.token);
@@ -34,7 +35,7 @@ const AdminLogin = () => {
             }
         }
     };
-    
+
 
     return (
         <div className="min-h-screen bg-gradient-to-r from-blue-100 to-indigo-400 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
@@ -112,7 +113,7 @@ const AdminLogin = () => {
                                 </button>
 
                             </div>
-    
+
 
 
                             <div>

@@ -7,6 +7,7 @@ import ProductCard from '../components/Layout/ProductCard';
 import { Checkbox, Spin } from 'antd';
 import Prices from '../components/Prices';
 import SearchInput from '../components/Form/SearchInput';
+import { API_BASE_URL } from '../main';
 
 const Products = () => {
     const [categories, setCategories] = useState([]);
@@ -22,7 +23,7 @@ const Products = () => {
 
     const getTotal = async () => {
         try {
-            const { data } = await axios.get("http://localhost:3000/api/v1/product/product-count")
+            const { data } = await axios.get(`${API_BASE_URL}api/v1/product/product-count`)
             setTotal(data?.total)
         } catch (error) {
             console.log(error)
@@ -37,7 +38,7 @@ const Products = () => {
     const showMore = async () => {
         try {
             setLoading(true)
-            const { data } = await axios.get(`http://localhost:3000/api/v1/product/product-list/${page}`)
+            const { data } = await axios.get(`${API_BASE_URL}api/v1/product/product-list/${page}`)
             setLoading(false)
             setProducts([...products, ...data.products])
         } catch (error) {
@@ -47,7 +48,7 @@ const Products = () => {
 
     const getAllCategories = async () => {
         try {
-            const { data } = await axios.get('http://localhost:3000/api/v1/category/get-category');
+            const { data } = await axios.get(`${API_BASE_URL}api/v1/category/get-category`);
             if (data?.success) {
                 setCategories(data?.categories);
             }
@@ -61,7 +62,7 @@ const Products = () => {
     const getAllProducts = async () => {
         try {
             setLoading(true);
-            const { data } = await axios.get(`http://localhost:3000/api/v1/product/product-list/${page}`);
+            const { data } = await axios.get(`${API_BASE_URL}api/v1/product/product-list/${page}`);
             setLoading(false);
             if (data?.success) {
                 setProducts(data?.products);
@@ -76,14 +77,13 @@ const Products = () => {
         if (value) {
             all.push(id);
         } else {
-            all = all.filter((c) => c !== id);
         }
         setChecked(all);
     };
 
     const filterProduct = async () => {
         try {
-            const { data } = await axios.post("http://localhost:3000/api/v1/product/product-filter", { checked })
+            const { data } = await axios.post(`${API_BASE_URL}/api/v1/product/product-filter`, { checked })
             setProducts(data?.products)
         } catch (error) {
             console.log(error)

@@ -5,6 +5,7 @@ import { useLike } from '../context/FavouriteContext'
 import { useAuth } from '../context/auth'
 import { useNavigate } from 'react-router-dom'
 import { Trash2, Heart, ShoppingBag } from 'lucide-react'
+import { API_BASE_URL } from '../main'
 
 const Likes = () => {
   const [like, setLike] = useLike();
@@ -39,7 +40,7 @@ const Likes = () => {
             {favoriteItems.map((item) => (
               <div key={item._id} className="bg-white rounded-lg shadow-md overflow-hidden">
                 <img
-                  src={`http://localhost:3000/api/v1/product/product-photo/${item._id}`}
+                  src={`${API_BASE_URL}api/v1/product/product-photo/${item._id}`}
                   alt={item.name}
                   className="w-full h-48 object-cover"
                 />
@@ -54,8 +55,8 @@ const Likes = () => {
                     >
                       View Details
                     </button>
-                    <button 
-                      onClick={() => removeFavoriteItem(item._id)} 
+                    <button
+                      onClick={() => removeFavoriteItem(item._id)}
                       className="text-red-500 hover:text-red-700"
                     >
                       <Trash2 size={20} />

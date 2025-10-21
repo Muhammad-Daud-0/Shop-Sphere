@@ -7,6 +7,7 @@ import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom'
 import { Toaster, toast } from "react-hot-toast"
 import { useAuth } from '../../context/auth';
+import { API_BASE_URL } from '../../main';
 
 const Profile = () => {
   const [auth, setAuth] = useAuth()
@@ -22,7 +23,7 @@ const Profile = () => {
     setError(null);
     setSuccess(null);
     try {
-      const { data } = await axios.put('http://localhost:3000/api/v1/auth/profile', { name, email, password, phone, address });
+      const { data } = await axios.put(`${API_BASE_URL}/api/v1/auth/profile`, { name, email, password, phone, address });
       if (data?.error) {
         toast.error(data.error)
       }

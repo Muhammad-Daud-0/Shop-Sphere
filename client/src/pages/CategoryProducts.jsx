@@ -5,22 +5,23 @@ import axios from "axios"
 import { useParams } from 'react-router-dom'
 import ProductCard from '../components/Layout/ProductCard'
 import { ChevronDown } from 'lucide-react'
+import { API_BASE_URL } from '../main';
 
 const CategoryProducts = () => {
     const params = useParams()
     const [products, setProducts] = useState([])
     const [category, setCategory] = useState({})
     const [visibleProducts, setVisibleProducts] = useState(6)
-    
+
     const getProductsByCat = async () => {
         try {
-            const { data } = await axios.get(`http://localhost:3000/api/v1/product/products-category/${params.slug}`)
+            const { data } = await axios.get(`${API_BASE_URL}/api/v1/product/products-category/${params.slug}`)
             setProducts(data?.products)
             setCategory(data?.category)
         } catch (error) {
             console.error("Error fetching products:", error)
         }
-    } 
+    }
 
     useEffect(() => {
         getProductsByCat()

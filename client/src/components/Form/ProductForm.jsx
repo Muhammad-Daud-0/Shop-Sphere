@@ -2,6 +2,7 @@
 /* eslint-disable react/prop-types */
 import React, { useState, useEffect } from 'react';
 import { Select, Input } from 'antd';
+import { API_BASE_URL } from '../../main';
 
 const { Option } = Select;
 
@@ -64,11 +65,11 @@ const ProductForm = ({ handleSubmit, categories, initialValues = {} }) => {
                             </div>
                         ) : (<div>
                             <div>
-                                <img 
-                                alt=""
-                                src={`http://localhost:3000/api/v1/product/product-photo/${initialValues._id}`}
-                                width="100"
-                                height="100"
+                                <img
+                                    alt=""
+                                    src={`${API_BASE_URL}/api/v1/product/product-photo/${initialValues._id}`}
+                                    width="100"
+                                    height="100"
                                 />
                             </div>
                         </div>)}

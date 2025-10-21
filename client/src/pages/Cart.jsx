@@ -5,6 +5,7 @@ import { useCart } from '../context/CartContext'
 import { useAuth } from '../context/auth'
 import { useNavigate } from 'react-router-dom'
 import { Trash2, Plus, Minus, ShoppingBag } from 'lucide-react'
+import { API_BASE_URL } from '../main';
 
 const Cart = () => {
   const [cart, setCart] = useCart()
@@ -66,7 +67,7 @@ const Cart = () => {
               {cartItems.map((item) => (
                 <div key={item._id} className="flex flex-col sm:flex-row items-center bg-white rounded-lg shadow-md p-4 mb-4">
                   <img
-                    src={`http://localhost:3000/api/v1/product/product-photo/${item._id}`}
+                    src={`${API_BASE_URL}/api/v1/product/product-photo/${item._id}`}
                     alt={item.name}
                     className="w-full sm:w-32 h-32 object-cover rounded-md mb-4 sm:mb-0 sm:mr-4"
                   />
@@ -113,13 +114,13 @@ const Cart = () => {
                   </div>
                   <button onClick={() => navigate("/dashboard/profile")} className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 transition duration-300 mb-3">Update Address</button>
                   <button
-                    onClick={() => auth?.token ? navigate('/dashboard/checkout') : navigate('/login', {state : '/cart'})}
+                    onClick={() => auth?.token ? navigate('/dashboard/checkout') : navigate('/login', { state: '/cart' })}
                     className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 transition duration-300"
                   >
                     Proceed to Checkout
                   </button>
                 </> : <button
-                  onClick={() => auth?.token ? navigate('/checkout') : navigate('/login', {state : '/cart'})}
+                  onClick={() => auth?.token ? navigate('/checkout') : navigate('/login', { state: '/cart' })}
                   className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 transition duration-300"
                 >
                   Proceed to Checkout

@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
+import { API_BASE_URL } from '../../main';
 
 const CategoryForm = ({ handleSubmit, initialValues = {} }) => {
     const [name, setName] = useState(initialValues.name || '');
@@ -56,7 +57,7 @@ const CategoryForm = ({ handleSubmit, initialValues = {} }) => {
                             ) : initialValues._id ? (
                                 <div>
                                     <img
-                                        src={`http://localhost:3000/api/v1/category/category-photo/${initialValues._id}`}
+                                        src={`${API_BASE_URL}/api/v1/category/category-photo/${initialValues._id}`}
                                         alt="Current category"
                                         width="100"
                                         height="100"

@@ -5,6 +5,7 @@ import { Search, Eye, Edit, Package } from 'lucide-react'
 import axios from 'axios'
 import { Toaster, toast } from 'react-hot-toast'
 import OrderDetailsModal from './OrderDetailsModal'
+import { API_BASE_URL } from '../../main';
 
 const OrdersAdmin = () => {
   const [orders, setOrders] = useState([])
@@ -17,7 +18,7 @@ const OrdersAdmin = () => {
 
   const getBuyerDetails = async (buyerId) => {
     try {
-      const { data } = await axios.get(`http://localhost:3000/api/v1/auth/user/${buyerId}`)
+      const { data } = await axios.get(`${API_BASE_URL}/api/v1/auth/user/${buyerId}`)
       console.log(data)
       if (data?.success) {
         setBuyers(prev => ({ ...prev, [buyerId]: data.user }))
@@ -30,7 +31,7 @@ const OrdersAdmin = () => {
   const getAllOrders = async () => {
     try {
       setLoading(true)
-      const { data } = await axios.get('http://localhost:3000/api/v1/order/get-all-orders')
+      const { data } = await axios.get(`${API_BASE_URL}/api/v1/order/get-all-orders`)
       console.log(data)
       if (data?.success) {
         setOrders(data.orders)
@@ -66,7 +67,7 @@ const OrdersAdmin = () => {
 
   const handleUpdateOrder = async (orderId, updatedData) => {
     try {
-      const { data } = await axios.put(`http://localhost:3000/api/v1/order/update-order-status/${orderId}`, updatedData)
+      const { data } = await axios.put(`${API_BASE_URL}/api/v1/order/update-order-status/${orderId}`, updatedData)
       if (data?.success) {
         toast.success('Order updated successfully')
         setIsModalOpen(false)
@@ -196,17 +197,17 @@ const OrdersAdmin = () => {
           </table>
         </div>
       </div>
-      { isModalOpen && (
-      <OrderDetailsModal
-        order={selectedOrder}
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        isEditing={isEditing}
-        onUpdate={handleUpdateOrder}
-      />
-    )
-  }
-    </div>  
+      {isModalOpen && (
+        <OrderDetailsModal
+          order={selectedOrder}
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          isEditing={isEditing}
+          onUpdate={handleUpdateOrder}
+        />
+      )
+      }
+    </div>
   )
 }
 

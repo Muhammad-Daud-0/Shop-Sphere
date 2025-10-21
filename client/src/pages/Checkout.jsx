@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import toast from 'react-hot-toast'
 import { CurrencyIcon as CashIcon } from 'lucide-react'
+import { API_BASE_URL } from '../main';
 
 const Checkout = () => {
     const [cart, setCart] = useCart()
@@ -34,7 +35,7 @@ const Checkout = () => {
             }
 
             const { data } = await axios.post(
-                'http://localhost:3000/api/v1/order/create-order',
+                `${API_BASE_URL}/api/v1/order/create-order`,
                 orderData
             )
 
@@ -103,9 +104,8 @@ const Checkout = () => {
                                 <button
                                     type="submit"
                                     disabled={loading}
-                                    className={`w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 transition duration-300 ${
-                                        loading ? 'opacity-50 cursor-not-allowed' : ''
-                                    }`}
+                                    className={`w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 transition duration-300 ${loading ? 'opacity-50 cursor-not-allowed' : ''
+                                        }`}
                                 >
                                     {loading ? 'Placing Order...' : 'Place Order'}
                                 </button>

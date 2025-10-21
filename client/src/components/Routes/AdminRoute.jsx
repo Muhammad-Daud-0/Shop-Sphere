@@ -4,6 +4,7 @@ import { useAuth } from "../../context/auth";
 import { Outlet, useNavigate } from "react-router-dom";
 import axios from 'axios';
 import Spinner from "../Spinner";
+import { API_BASE_URL } from '../../main';
 
 export default function AdminRoute() {
     const [ok, setOk] = useState(false);
@@ -13,21 +14,21 @@ export default function AdminRoute() {
     useEffect(() => {
         const authCheck = async () => {
             try {
-                const res = await axios.get('http://localhost:3000/api/v1/auth/admin-auth', {
+                const res = await axios.get(`${API_BASE_URL}api/v1/auth/admin-auth`, {
                     headers: {
-                        Authorization: auth?.token, 
+                        Authorization: auth?.token,
                     },
                 });
                 if (res.data.ok) {
                     setOk(true);
                 } else {
                     setOk(false);
-                    navigate('/login'); 
+                    navigate('/login');
                 }
             } catch (error) {
                 console.error("Error during admin authentication check:", error);
                 setOk(false);
-                navigate('/login'); 
+                navigate('/login');
             }
         };
 

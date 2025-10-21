@@ -4,8 +4,9 @@ import Layout from '../../components/Layout/Layout'
 import { useAuth } from '../../context/auth'
 import axios from 'axios'
 import { format } from 'date-fns'
-import { Loader2, Package,ArrowLeft } from 'lucide-react'
+import { Loader2, Package, ArrowLeft } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { API_BASE_URL } from '../../main';
 
 const Orders = () => {
   const [orders, setOrders] = useState([])
@@ -18,7 +19,7 @@ const Orders = () => {
 
   const fetchOrders = async () => {
     try {
-      const { data } = await axios.get('http://localhost:3000/api/v1/order/get-user-orders', {
+      const { data } = await axios.get(`${API_BASE_URL}api/v1/order/get-user-orders`, {
         headers: {
           Authorization: auth?.token
         }
@@ -52,13 +53,13 @@ const Orders = () => {
   return (
     <Layout title="Your Orders - Shop Sphere">
       <div className="container mx-auto px-4 py-8">
-                <button
-                    onClick={() => window.history.back()}
-                    className="flex items-center gap-2 text-indigo-600 hover:text-indigo-800 mb-6"
-                >
-                    <ArrowLeft className="w-4 h-4" />
-                    Back to checkout
-                </button>
+        <button
+          onClick={() => window.history.back()}
+          className="flex items-center gap-2 text-indigo-600 hover:text-indigo-800 mb-6"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Back to checkout
+        </button>
         <h1 className="text-3xl font-bold mb-8">Your Orders</h1>
         {loading ? (
           <div className="flex justify-center items-center h-64">

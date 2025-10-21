@@ -5,6 +5,7 @@ import { Search, Trash2, Eye } from 'lucide-react';
 import axios from 'axios';
 import { Toaster, toast } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
+import { API_BASE_URL } from '../../main';
 
 const Users = () => {
   const [users, setUsers] = useState([]);
@@ -15,7 +16,7 @@ const Users = () => {
   const getAllUsers = async () => {
     try {
       setLoading(true);
-      const { data } = await axios.get('http://localhost:3000/api/v1/auth/total-users');
+      const { data } = await axios.get(`${API_BASE_URL}/api/v1/auth/total-users`);
       console.log(data);
       if (data?.success) {
         setUsers(data?.total);
