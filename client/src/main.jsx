@@ -1,4 +1,6 @@
 /* eslint-disable no-unused-vars */
+export const API_BASE_URL = "http://mern-env.eba-qyah2eg7.ap-south-1.elasticbeanstalk.com/";
+
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
