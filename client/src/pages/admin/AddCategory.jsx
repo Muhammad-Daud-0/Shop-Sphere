@@ -19,7 +19,7 @@ const AddCategory = () => {
     try {
       setLoading(true);
       console.log('Fetching categories...');
-      const { data } = await axios.get(`${API_BASE_URL}api/v1/category/get-category`);
+      const { data } = await axios.get(`${API_BASE_URL}/api/v1/category/get-category`);
       console.log('API response:', data);
       if (data?.success) {
         setCategories(data?.categories);
@@ -40,7 +40,7 @@ const AddCategory = () => {
   const handleCategorySubmit = async (formData) => {
     try {
       const { data } = await axios.post(
-        `${API_BASE_URL}api/v1/category/create-category`,
+        `${API_BASE_URL}/api/v1/category/create-category`,
         formData,
         {
           headers: {
@@ -65,7 +65,7 @@ const AddCategory = () => {
   const handleEdit = async (formData) => {
     try {
       const { data } = await axios.put(
-        `${API_BASE_URL}api/v1/category/update-category/${selectedCategory._id}`,
+        `${API_BASE_URL}/api/v1/category/update-category/${selectedCategory._id}`,
         formData,
         {
           headers: {
@@ -89,7 +89,7 @@ const AddCategory = () => {
 
   const handleDelete = async (id) => {
     try {
-      const { data } = await axios.delete(`${API_BASE_URL}api/v1/category/delete-category/${id}`);
+      const { data } = await axios.delete(`${API_BASE_URL}/api/v1/category/delete-category/${id}`);
       if (data?.success) {
         toast.success('Category deleted successfully!');
         getAllCategories();
@@ -205,7 +205,7 @@ const AddCategory = () => {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <img
-                          src={`${API_BASE_URL}api/v1/category/category-photo/${category._id}`}
+                          src={`${API_BASE_URL}/api/v1/category/category-photo/${category._id}`}
                           alt={category.name}
                           className="h-10 w-10 rounded-full"
                         />
