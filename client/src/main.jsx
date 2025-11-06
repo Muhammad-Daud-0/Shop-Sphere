@@ -1,5 +1,4 @@
-/* eslint-disable no-unused-vars */
-// export const API_BASE_URL = """;
+export const API_BASE_URL = import.meta?.env?.API || "http://localhost:3000";
 
 import { createRoot } from 'react-dom/client'
 import './index.css'
