@@ -4,7 +4,7 @@ services:
     ports:
       - "80:80"
     environment:
-      - REACT_APP_API_URL=http://13.203.220.24:3000
+      - REACT_APP_API_URL=http://15.206.164.123:3000
     depends_on:
       - backend
     restart: always

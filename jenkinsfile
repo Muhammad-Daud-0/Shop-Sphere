@@ -36,8 +36,8 @@ pipeline {
     post {
         success {
             echo "Deployment successful!"
-            echo "Frontend: http://13.203.220.24:${FRONTEND_PORT}"
-            echo "Backend: http://13.203.220.24:${BACKEND_PORT}"
+            echo "Frontend: http://15.206.164.123:${FRONTEND_PORT}"
+            echo "Backend: http://15.206.164.123:${BACKEND_PORT}"
         }
         failure {
             echo "Deployment failed. Check logs above."
