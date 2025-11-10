@@ -1,13 +1,18 @@
 pipeline {
   agent any
 
-  options {
-    timestamps()
-    ansiColor('xterm')
-    timeout(time: 60, unit: 'MINUTES')
-  }
+   
 
   stages {
+
+    stage('Build') {
+            steps {
+                ansiColor('xterm') {
+                    sh 'echo "Building the app..."'
+                }
+            }
+        }
+        
     stage('Checkout') {
       steps {
         echo 'Checking out source from SCM'
