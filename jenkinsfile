@@ -1,12 +1,12 @@
 pipeline {
     agent any
-
+    
     environment {
         FRONTEND_PORT = "8081"  
         BACKEND_PORT = "3001"
         DOCKER_COMPOSE_FILE = "docker-compose.jenkins.yml"
     }
-
+    
     stages {
         stage('Checkout Code') {
             steps {
@@ -24,7 +24,7 @@ pipeline {
                 """
             }
         }
-
+        
         stage('Verify Deployment') {
             steps {
                 echo "Checking running containers..."
@@ -36,8 +36,8 @@ pipeline {
     post {
         success {
             echo "Deployment successful!"
-            echo "Frontend: http://15.206.164.123:${FRONTEND_PORT}"
-            echo "Backend: http://15.206.164.123:${BACKEND_PORT}"
+            echo "Frontend: http://15.207.55.132:${FRONTEND_PORT}"
+            echo "Backend: http://15.207.55.132:${BACKEND_PORT}"
         }
         failure {
             echo "Deployment failed. Check logs above."
