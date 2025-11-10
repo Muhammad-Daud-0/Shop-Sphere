@@ -1,88 +1,56 @@
 pipeline {
-    agent any
-    
-    environment {
-        DOCKER_COMPOSE_FILE = "docker-compose.jenkins.yml"
-    }
-    
-    stages {
-        stage('Checkout Code') {
-            steps {
-                echo "Cloning project repository..."
-                git branch: 'jenkins', url: 'https://github.com/Muhammad-Daud-0/Shop-Sphere.git'
-            }
-        }
-        stage('Set Up Docker Environment') {
-            steps {
-                echo '⚙️ Checking Docker and Docker Compose installation...'
-                sh '''
-                    docker --version
-                    if docker compose version >/dev/null 2>&1; then
-                        echo "✅ Docker Compose v2 detected"
-                    else
-                        echo "⚠️ Installing Docker Compose plugin..."
-                        apt-get update -y && apt-get install -y docker-compose-plugin
-                    fi
-                    docker compose version
-                '''
-            }
-        }
-        
-        stage('Clean Previous Containers') {
-            steps {
-                echo '🧹 Cleaning up old containers and volumes...'
-                sh '''
-                    echo "🔍 Removing existing CI containers if any..."
-                    # 🆕 Added: remove any containers that have _ci in name
-                    docker ps -aq --filter "name=_ci" | xargs -r docker rm -f || true
+  agent any
 
-                    echo "🔍 Bringing down any docker-compose project..."
-                    docker compose down --volumes --remove-orphans || true
-                    
-                    echo "🧼 Pruning unused images, networks, and volumes..."
-                    docker system prune -af || true
-                    docker volume prune -f || true
-                '''
-            }
-        }
-        
+  options {
+    timestamps()
+    ansiColor('xterm')
+    timeout(time: 60, unit: 'MINUTES')
+  }
 
-        stage('Build and Run Application') {
-            steps {
-                echo '🚀 Building and starting containers...'
-                sh '''
-                    docker compose up -d --build
-                '''
-            }
-        }
-        
-        stage('Verify Containers') {
-            steps {
-                echo '🔍 Listing running containers...'
-                sh 'docker ps'
-            }
-        }
+  stages {
+    stage('Checkout') {
+      steps {
+        echo 'Checking out source from SCM'
+        checkout scm
+        sh 'ls -la'
+      }
+    }
 
-        stage('Application Health Check') {
-            steps {
-                echo '🩺 Checking if backend and frontend are accessible...'
-                sh '''
-                    sleep 10
-                    echo "Backend (port 3001):"
-                    curl -I http://localhost:3001 || true
-                    echo "Frontend (port 8081):"
-                    curl -I http://localhost:8081 || true
-                '''
-            }
-        }
+    stage('Run CI compose (build inside containers)') {
+      steps {
+        echo 'Starting docker-compose for CI builds'
+        // run docker compose to build frontend and backend inside container images
+        sh 'docker compose -f docker-compose.jenkins.yml up --build --abort-on-container-exit --exit-code-from backend_ci'
+      }
     }
-    
-    post {
-        success {
-            echo '✅ Build pipeline completed successfully! Containers are running.'
-        }
-        failure {
-            echo '❌ Build pipeline failed. Please check the Jenkins logs for details.'
-        }
+
+    stage('Collect artifacts') {
+      steps {
+        echo 'Collecting frontend build artifacts'
+        // frontend build output (vite) usually in client/dist
+        sh 'if [ -d ./client/dist ]; then ls -la client/dist; tar -czf artifacts-frontend-dist.tar.gz -C client dist || true; fi'
+        archiveArtifacts artifacts: 'artifacts-*.tar.gz', fingerprint: true
+      }
     }
+
+    stage('Teardown') {
+      steps {
+        echo 'Shutting down CI containers'
+        sh 'docker compose -f docker-compose.jenkins.yml down -v --remove-orphans'
+      }
+    }
+  }
+
+  post {
+    always {
+      echo 'Post: ensure cleanup'
+      sh 'docker compose -f docker-compose.jenkins.yml down -v --remove-orphans || true'
+    }
+    success {
+      echo 'Pipeline succeeded'
+    }
+    failure {
+      echo 'Pipeline failed — inspect the logs above'
+    }
+  }
 }
