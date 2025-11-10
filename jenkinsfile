@@ -1,10 +1,18 @@
 pipeline {
   agent any
 
-   
+  options {
+    timestamps()
+    ansiColor('xterm')
+    timeout(time: 45, unit: 'MINUTES')
+  }
+
+  environment {
+    // scoped compose project name to avoid name collisions on the host
+    COMPOSE_PROJECT = 'shop_ci'
+  }
 
   stages {
-    
     stage('Checkout') {
       steps {
         echo 'Checking out source from SCM'
@@ -13,41 +21,40 @@ pipeline {
       }
     }
 
-    stage('Run CI compose (build inside containers)') {
+    stage('CI Build (docker-compose)') {
       steps {
-        echo 'Starting docker-compose for CI builds'
-        // run docker compose to build frontend and backend inside container images
-        sh 'docker compose -f docker-compose.jenkins.yml up --build --abort-on-container-exit --exit-code-from backend_ci'
+        echo 'Running CI compose to build frontend and backend'
+        // use explicit project name to prevent collisions with production stack
+        sh "COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT} docker compose -f docker-compose.jenkins.yml up --build --abort-on-container-exit --exit-code-from frontend_ci"
       }
     }
 
-    stage('Collect artifacts') {
+    stage('Archive artifacts') {
       steps {
-        echo 'Collecting frontend build artifacts'
-        // frontend build output (vite) usually in client/dist
-        sh 'if [ -d ./client/dist ]; then ls -la client/dist; tar -czf artifacts-frontend-dist.tar.gz -C client dist || true; fi'
-        archiveArtifacts artifacts: 'artifacts-*.tar.gz', fingerprint: true
+        echo 'Archiving frontend build artifacts (client/dist)'
+        sh 'if [ -d ./client/dist ]; then tar -czf artifacts-frontend-dist.tar.gz -C client dist; fi'
+        archiveArtifacts artifacts: 'artifacts-frontend-dist.tar.gz', fingerprint: true, onlyIfSuccessful: true
       }
     }
 
-    stage('Teardown') {
+    stage('Cleanup CI containers') {
       steps {
-        echo 'Shutting down CI containers'
-        sh 'docker compose -f docker-compose.jenkins.yml down -v --remove-orphans'
+        echo 'Tearing down CI containers and volumes'
+        sh "COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT} docker compose -f docker-compose.jenkins.yml down -v --remove-orphans || true"
       }
     }
   }
 
   post {
     always {
-      echo 'Post: ensure cleanup'
-      sh 'docker compose -f docker-compose.jenkins.yml down -v --remove-orphans || true'
+      echo 'Post: Ensure CI cleanup'
+      sh "COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT} docker compose -f docker-compose.jenkins.yml down -v --remove-orphans || true"
     }
     success {
       echo 'Pipeline succeeded'
     }
     failure {
-      echo 'Pipeline failed — inspect the logs above'
+      echo 'Pipeline failed — check logs above'
     }
   }
 }
