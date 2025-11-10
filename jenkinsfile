@@ -2,8 +2,6 @@ pipeline {
     agent any
     
     environment {
-        FRONTEND_PORT = "8081"  
-        BACKEND_PORT = "3001"
         DOCKER_COMPOSE_FILE = "docker-compose.jenkins.yml"
     }
     
@@ -14,33 +12,77 @@ pipeline {
                 git branch: 'jenkins', url: 'https://github.com/Muhammad-Daud-0/Shop-Sphere.git'
             }
         }
-
-        stage('Build & Run Containers') {
+        stage('Set Up Docker Environment') {
             steps {
-                echo "Starting Docker Compose build..."
-                sh """
-                    docker-compose -f $DOCKER_COMPOSE_FILE down
-                    docker-compose -f $DOCKER_COMPOSE_FILE up --build -d
-                """
+                echo '⚙️ Checking Docker and Docker Compose installation...'
+                sh '''
+                    docker --version
+                    if docker compose version >/dev/null 2>&1; then
+                        echo "✅ Docker Compose v2 detected"
+                    else
+                        echo "⚠️ Installing Docker Compose plugin..."
+                        apt-get update -y && apt-get install -y docker-compose-plugin
+                    fi
+                    docker compose version
+                '''
             }
         }
         
-        stage('Verify Deployment') {
+        stage('Clean Previous Containers') {
             steps {
-                echo "Checking running containers..."
-                sh "docker ps --format 'table {{.Names}}\t{{.Ports}}\t{{.Status}}'"
+                echo '🧹 Cleaning up old containers and volumes...'
+                sh '''
+                    echo "🔍 Removing existing CI containers if any..."
+                    # 🆕 Added: remove any containers that have _ci in name
+                    docker ps -aq --filter "name=_ci" | xargs -r docker rm -f || true
+
+                    echo "🔍 Bringing down any docker-compose project..."
+                    docker compose down --volumes --remove-orphans || true
+                    
+                    echo "🧼 Pruning unused images, networks, and volumes..."
+                    docker system prune -af || true
+                    docker volume prune -f || true
+                '''
+            }
+        }
+        
+
+        stage('Build and Run Application') {
+            steps {
+                echo '🚀 Building and starting containers...'
+                sh '''
+                    docker compose up -d --build
+                '''
+            }
+        }
+        
+        stage('Verify Containers') {
+            steps {
+                echo '🔍 Listing running containers...'
+                sh 'docker ps'
+            }
+        }
+
+        stage('Application Health Check') {
+            steps {
+                echo '🩺 Checking if backend and frontend are accessible...'
+                sh '''
+                    sleep 10
+                    echo "Backend (port 3001):"
+                    curl -I http://localhost:3001 || true
+                    echo "Frontend (port 8081):"
+                    curl -I http://localhost:8081 || true
+                '''
             }
         }
     }
-
+    
     post {
         success {
-            echo "Deployment successful!"
-            echo "Frontend: http://15.207.55.132:${FRONTEND_PORT}"
-            echo "Backend: http://15.207.55.132:${BACKEND_PORT}"
+            echo '✅ Build pipeline completed successfully! Containers are running.'
         }
         failure {
-            echo "Deployment failed. Check logs above."
+            echo '❌ Build pipeline failed. Please check the Jenkins logs for details.'
         }
     }
 }
