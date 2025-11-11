@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  mongo_ci:
+    image: mongo:6.0
+    restart: always
+    volumes:
+      - mongo_ci_data:/data/db
+
+  backend_ci:
+    image: node:18-alpine
+    working_dir: /usr/src/app
+    volumes:
+      - ./server:/usr/src/app:delegated
+    environment:
+      - PORT=3000
+      - MONGODB_URI=mongodb+srv://mdaud9062_db_user:OWMPP19JHAFBAzSO@shop-sphere.pwtcm1s.mongodb.net/?retryWrites=true&w=majority&appName=Shop-Sphere
+      - JWT_SECRETKEY=ci_jwt_secret
+    depends_on:
+      - mongo_ci
+    # install dependencies (CI build); do not start the server here
+    command: sh -c "npm ci"
+    restart: 'no'
+
+  frontend_ci:
+    image: node:18-alpine
+    working_dir: /app
+    volumes:
+      - ./client:/app:delegated
+    # build frontend; artifacts will be available in ./client/dist
+    command: sh -c "npm ci && npm run build"
+    restart: 'no'
+
+volumes:
+  mongo_ci_data:
+
