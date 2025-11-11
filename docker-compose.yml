@@ -4,7 +4,7 @@ services:
     container_name: backend_ci
     working_dir: /app
     volumes:
-      - ./server
+      - ./server:/app
     ports:
       - "4000:3000"  # Host 4000 → Container 3000
     environment:
@@ -19,7 +19,7 @@ services:
     container_name: frontend_ci
     working_dir: /app
     volumes:
-      - ./client
+      - ./client:/app
     ports:
       - "8085:5173"  # Host 8085 → Container 5173 (Vite dev server)
     environment:
