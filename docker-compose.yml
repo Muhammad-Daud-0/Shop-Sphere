@@ -1,36 +1,30 @@
-version: '3.8'
-
 services:
-  mongo_ci:
-    image: mongo:6.0
-    restart: always
-    volumes:
-      - mongo_ci_data:/data/db
-
-  backend_ci:
-    image: node:18-alpine
-    working_dir: /usr/src/app
-    volumes:
-      - ./server:/usr/src/app:delegated
-    environment:
-      - PORT=3000
-      - MONGODB_URI=mongodb+srv://mdaud9062_db_user:OWMPP19JHAFBAzSO@shop-sphere.pwtcm1s.mongodb.net/?retryWrites=true&w=majority&appName=Shop-Sphere
-      - JWT_SECRETKEY=ci_jwt_secret
-    depends_on:
-      - mongo_ci
-    # install dependencies (CI build); do not start the server here
-    command: sh -c "npm ci"
-    restart: 'no'
-
-  frontend_ci:
-    image: node:18-alpine
+  backend:
+    image: node:20
+    container_name: backend_ci
     working_dir: /app
     volumes:
-      - ./client:/app:delegated
-    # build frontend; artifacts will be available in ./client/dist
-    command: sh -c "npm ci && npm run build"
-    restart: 'no'
+      - ./server:/app
+    ports:
+      - "4000:3000"  # Host 4000 → Container 3000
+    environment:
+      - PORT=3000
+      - JWT_SECRETKEY=chintapaktamtam
+      - MONGODB_URI=mongodb+srv://mdaud9062_db_user:OWMPP19JHAFBAzSO@shop-sphere.pwtcm1s.mongodb.net/?retryWrites=true&w=majority&appName=Shop-Sphere
+    command: sh -c "npm install && npm start"
+    restart: always
 
-volumes:
-  mongo_ci_data:
-
+  frontend:
+    image: node:20
+    container_name: frontend_ci
+    working_dir: /app
+    volumes:
+      - ./my-project:/app
+    ports:
+      - "8085:5173"  # Host 8085 → Container 5173 (Vite dev server)
+    environment:
+      - VITE_API=${VITE_API}   # Use backend container name for internal Docker network
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
+    depends_on:
+      - backend
+    restart: always

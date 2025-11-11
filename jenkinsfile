@@ -2,54 +2,113 @@ pipeline {
     agent any
 
     environment {
-        FRONTEND_PORT = "8085"  
-        BACKEND_PORT = "4001"
-        DOCKER_COMPOSE_FILE = "./docker-compose.jenkins.yml"
+        COMPOSE_PROJECT_NAME = "jenkins_ci_app"
+        VITE_API = "http://3.109.2.224/:3000"   // ✅ Inject your frontend API endpoint here
     }
 
     stages {
-        stage('Checkout Code') {
+        stage('Checkout Code from GitHub') {
             steps {
-                echo "Cloning project repository..."
-                // checkout the same repository the job is configured with
+                echo '📦 Cloning repository...'
                 git branch: 'jenkins', url: 'https://github.com/Muhammad-Daud-0/Shop-Sphere.git'
             }
         }
-
-        stage('Build & Run Containers') {
+        
+        stage('Set Up Docker Environment') {
             steps {
-                echo "Docker info and Compose version (for debugging)"
-                sh 'docker version || true'
-                sh 'docker info || true'
-                sh 'docker compose version || docker-compose --version || true'
-
-                echo "Starting Docker Compose build (scoped project shop_ci)..."
-                sh """
-                  COMPOSE_PROJECT_NAME=shop_ci docker compose -f ${DOCKER_COMPOSE_FILE} down || true
-                  COMPOSE_PROJECT_NAME=shop_ci docker compose -f ${DOCKER_COMPOSE_FILE} up --build -d
-                """
+                echo '⚙️ Checking Docker and Docker Compose installation...'
+                sh '''
+                    docker --version
+                    if docker compose version >/dev/null 2>&1; then
+                        echo "✅ Docker Compose v2 detected"
+                    else
+                        echo "⚠️ Installing Docker Compose plugin..."
+                        apt-get update -y && apt-get install -y docker-compose-plugin
+                    fi
+                    docker compose version
+                '''
             }
         }
 
-        stage('Verify Deployment') {
+        stage('Clean Previous Containers') {
             steps {
-                echo "Checking running containers..."
-                sh "docker ps --format 'table {{.Names}}\t{{.Ports}}\t{{.Status}}'"
+                echo '🧹 Cleaning up old containers and volumes...'
+                sh '''
+                    echo "🔍 Removing existing CI containers if any..."
+                    docker ps -aq --filter "name=_ci" | xargs -r docker rm -f || true
+
+                    echo "🔍 Bringing down any docker-compose project..."
+                    docker compose down --volumes --remove-orphans || true
+
+                    echo "🧼 Pruning unused images, networks, and volumes..."
+                    docker system prune -af || true
+                    docker volume prune -f || true
+                '''
+            }
+        }
+
+        stage('Build and Run Application') {
+            steps {
+                echo '🚀 Building and starting containers (no cache)...'
+                sh '''
+                    # Export VITE_API so Docker sees it
+                    export VITE_API=${VITE_API}
+
+                    # Rebuild everything without cache to pick up new .env and environment vars
+                    docker compose build --no-cache
+                    docker compose up -d
+                '''
+            }
+        }
+
+        stage('Verify Containers') {
+            steps {
+                echo '🔍 Listing running containers...'
+                sh 'docker ps'
+            }
+        }
+
+        stage('Application Health Check') {
+            steps {
+                echo '🩺 Checking if backend and frontend are accessible...'
+                sh '''
+                    echo "⏳ Waiting up to 60s for backend and frontend to respond..."
+                    for i in {1..12}; do
+                      if curl -s http://localhost:4000 >/dev/null 2>&1; then
+                        echo "✅ Backend is responding on port 4000"
+                        break
+                      else
+                        echo "⏳ Waiting for backend... ($i/12)"
+                        sleep 5
+                      fi
+                    done
+
+                    for i in {1..12}; do
+                      if curl -s http://localhost:8085 >/dev/null 2>&1; then
+                        echo "✅ Frontend is responding on port 8085"
+                        break
+                      else
+                        echo "⏳ Waiting for frontend... ($i/12)"
+                        sleep 5
+                      fi
+                    done
+
+                    echo "🧾 Backend logs (last 20 lines):"
+                    docker logs backend_ci --tail 20 || true
+
+                    echo "🧾 Frontend logs (last 20 lines):"
+                    docker logs frontend_ci --tail 20 || true
+                '''
             }
         }
     }
 
     post {
         success {
-            echo "Deployment successful!"
-            echo "Frontend: http://3.109.2.224:${FRONTEND_PORT}"
-            echo "Backend: http://3.109.2.224:${BACKEND_PORT}"
+            echo '✅ Build pipeline completed successfully! Website should be live on EC2.'
         }
         failure {
-            echo "Deployment failed. Check logs above."
-        }
-        always {
-            sh "COMPOSE_PROJECT_NAME=shop_ci docker compose -f ${DOCKER_COMPOSE_FILE} down -v --remove-orphans || true"
+            echo '❌ Build pipeline failed. Check Jenkins logs for details.'
         }
     }
 }
