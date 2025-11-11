@@ -19,11 +19,10 @@ pipeline {
         stage('Build & Run Containers') {
             steps {
                 echo "Starting Docker Compose build..."
+                // Use a scoped compose project name to avoid collisions with production
                 sh """
-                    # Use sudo because the Jenkins user commonly lacks permission for the docker socket
-                    # Make sure the jenkins user has passwordless sudo for docker/docker-compose or has been added to the docker group.
-                    sudo docker-compose -f $DOCKER_COMPOSE_FILE down || true
-                    sudo docker-compose -f $DOCKER_COMPOSE_FILE up --build -d
+                    COMPOSE_PROJECT_NAME=shop_ci docker-compose -f $DOCKER_COMPOSE_FILE down || true
+                    COMPOSE_PROJECT_NAME=shop_ci docker-compose -f $DOCKER_COMPOSE_FILE up --build -d
                 """
             }
         }
