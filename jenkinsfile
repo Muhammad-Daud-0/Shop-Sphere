@@ -4,7 +4,7 @@ pipeline {
     environment {
         FRONTEND_PORT = "8085"  
         BACKEND_PORT = "4001"
-        DOCKER_COMPOSE_FILE = "docker-compose.jenkins.yml"
+        DOCKER_COMPOSE_FILE = "./docker-compose.jenkins.yml"
     }
 
     stages {
@@ -18,11 +18,15 @@ pipeline {
 
         stage('Build & Run Containers') {
             steps {
-                echo "Starting Docker Compose build..."
-                // Use a scoped compose project name to avoid collisions with production
+                echo "Docker info and Compose version (for debugging)"
+                sh 'docker version || true'
+                sh 'docker info || true'
+                sh 'docker compose version || docker-compose --version || true'
+
+                echo "Starting Docker Compose build (scoped project shop_ci)..."
                 sh """
-                    COMPOSE_PROJECT_NAME=shop_ci docker-compose -f $DOCKER_COMPOSE_FILE down || true
-                    COMPOSE_PROJECT_NAME=shop_ci docker-compose -f $DOCKER_COMPOSE_FILE up --build -d
+                  COMPOSE_PROJECT_NAME=shop_ci docker compose -f ${DOCKER_COMPOSE_FILE} down || true
+                  COMPOSE_PROJECT_NAME=shop_ci docker compose -f ${DOCKER_COMPOSE_FILE} up --build -d
                 """
             }
         }
@@ -43,6 +47,9 @@ pipeline {
         }
         failure {
             echo "Deployment failed. Check logs above."
+        }
+        always {
+            sh "COMPOSE_PROJECT_NAME=shop_ci docker compose -f ${DOCKER_COMPOSE_FILE} down -v --remove-orphans || true"
         }
     }
 }
