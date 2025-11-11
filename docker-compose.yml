@@ -2,7 +2,7 @@ services:
   backend:
     image: node:20
     container_name: backend_ci
-    working_dir: /
+    working_dir: /app
     volumes:
       - ./server
     ports:
@@ -17,7 +17,7 @@ services:
   frontend:
     image: node:20
     container_name: frontend_ci
-    working_dir: /
+    working_dir: /app
     volumes:
       - ./client
     ports:
