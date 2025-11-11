@@ -1,34 +1,46 @@
 pipeline {
     agent any
 
+    environment {
+        FRONTEND_PORT = "8085"  
+        BACKEND_PORT = "4001"
+        DOCKER_COMPOSE_FILE = "docker-compose.jenkins.yml"
+    }
+
     stages {
-        stage('Checkout') {
+        stage('Checkout Code') {
             steps {
+                echo "Cloning project repository..."
                 git branch: 'jenkins', url: 'https://github.com/Muhammad-Daud-0/Shop-Sphere.git'
             }
         }
 
         stage('Build & Run Containers') {
             steps {
-                ansiColor('xterm') {
-                    sh 'docker-compose -f docker-compose.jenkins.yml down -v --remove-orphans || true'
-                    sh 'docker-compose -f docker-compose.jenkins.yml up -d --build'
-                }
+                echo "Starting Docker Compose build..."
+                sh """
+                    docker-compose -f $DOCKER_COMPOSE_FILE down
+                    docker-compose -f $DOCKER_COMPOSE_FILE up --build -d
+                """
             }
         }
 
-        stage('Verify Containers') {
+        stage('Verify Deployment') {
             steps {
-                ansiColor('xterm') {
-                    sh 'docker ps'
-                }
+                echo "Checking running containers..."
+                sh "docker ps --format 'table {{.Names}}\t{{.Ports}}\t{{.Status}}'"
             }
         }
     }
 
     post {
-        always {
-            echo "✅ Pipeline finished. Containers should be running on EC2."
+        success {
+            echo "Deployment successful!"
+            echo "Frontend: http://3.109.2.224:${FRONTEND_PORT}"
+            echo "Backend: http://3.109.2.224:${BACKEND_PORT}"
+        }
+        failure {
+            echo "Deployment failed. Check logs above."
         }
     }
 }

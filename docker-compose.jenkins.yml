@@ -15,24 +15,21 @@ services:
       - ./server:/usr/src/app:delegated
     environment:
       - PORT=3000
-      - MONGODB_URI=mongodb://mongo_ci:27017/shop_sphere
+      - MONGODB_URI=mongodb+srv://mdaud9062_db_user:OWMPP19JHAFBAzSO@shop-sphere.pwtcm1s.mongodb.net/?retryWrites=true&w=majority&appName=Shop-Sphere
       - JWT_SECRETKEY=ci_jwt_secret
     depends_on:
       - mongo_ci
-    # For CI we install deps and run any backend build/test steps. Adjust command if you have tests.
     command: sh -c "npm ci || exit 0"
-    # Use different host port than production if you need host access during CI
     ports:
       - "4001:3000"
     restart: 'no'
-
+  
   frontend_ci:
     image: node:18-alpine
     container_name: shop_sphere_frontend_ci
     working_dir: /app
     volumes:
       - ./client:/app:delegated
-    # Build the Vite frontend inside the container
     command: sh -c "npm ci && npm run build"
     ports:
       - "8085:5173"
