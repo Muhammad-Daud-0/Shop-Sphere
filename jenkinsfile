@@ -1,6 +1,6 @@
 pipeline {
     agent any
-    
+
     environment {
         COMPOSE_PROJECT_NAME = "jenkins_ci_app"
         VITE_API = "http://3.109.2.224:3000"   // ✅ Inject your frontend API endpoint here
@@ -13,7 +13,7 @@ pipeline {
                 git branch: 'jenkins', url: 'https://github.com/Muhammad-Daud-0/Shop-Sphere.git'
             }
         }
-        
+
         stage('Set Up Docker Environment') {
             steps {
                 echo '⚙️ Checking Docker and Docker Compose installation...'
