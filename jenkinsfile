@@ -13,7 +13,7 @@ pipeline {
     stages {
         stage('Checkout Code from GitHub') {
             steps {
-                echo '📦 Cloning repository...'
+                echo '📦 Cloning repository..'
                 git branch: 'jenkins', url: 'https://github.com/Muhammad-Daud-0/Shop-Sphere.git'
             }
         }
