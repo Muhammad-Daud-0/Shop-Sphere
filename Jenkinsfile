@@ -33,7 +33,7 @@ pipeline {
                 script {
                     sh '''
                     echo "Waiting for user-frontend-ci (5173) to be ready..."
-                    sudo docker run --rm --network=ci-network busybox nc -z user-frontend-ci 5173; do
+                    while ! sudo docker run --rm --network=ci-network busybox nc -z user-frontend-ci 5173; do
                         echo "Frontend not ready... retrying..."
                         sleep 2
                     done
@@ -76,16 +76,16 @@ pipeline {
                 )
             }
         }
-        failure {
-            script {
-                echo "❌ Build Failed. Check logs."
-                mail (
-                    subject: "Tests FAILED: ${env.JOB_NAME} [${env.BUILD_NUMBER}]",
-                    body: "Tests failed.\nBuild: ${env.BUILD_URL}",
-                    to: "mdaud9062@gmail.com"
-                )
-            }
-        }
+        // failure {
+        //     script {
+        //         echo "❌ Build Failed. Check logs."
+        //         mail (
+        //             subject: "Tests FAILED: ${env.JOB_NAME} [${env.BUILD_NUMBER}]",
+        //             body: "Tests failed.\nBuild: ${env.BUILD_URL}",
+        //             to: "mdaud9062@gmail.com"
+        //         )
+        //     }
+        // }
     }    
     
 }
