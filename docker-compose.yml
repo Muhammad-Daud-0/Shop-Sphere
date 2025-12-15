@@ -23,7 +23,7 @@ services:
     container_name: user-frontend-ci
     working_dir: /app
     volumes:
-      - ./my-project:/app
+      - ./client:/app
     command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
     ports:
       - "3005:5173"
