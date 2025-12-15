@@ -1,5 +1,5 @@
 pipeline {
-    agent { label 'ubuntu3' }
+    agent any
 
     environment {
         DOCKER_NETWORK = 'ci-network'
