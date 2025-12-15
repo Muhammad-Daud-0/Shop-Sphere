@@ -16,15 +16,15 @@ pipeline {
         stage('Build & Run Main Containers') {
             steps {
                 sh '''
-                sudo docker-compose down || true
-                sudo docker-compose up -d --build
+                docker-compose down || true
+                docker-compose up -d --build
                 '''
             }
         }
 
         stage('Verify Running Containers') {
             steps {
-                sh 'sudo docker ps'
+                sh 'docker ps'
             }
         }
 
@@ -48,9 +48,9 @@ pipeline {
                 dir('selenium-tests') {
                     sh '''
                     echo "Building Selenium Test Image..."
-                    sudo docker build -t selenium-tests .
+                    docker build -t selenium-tests .
                     echo "Running Selenium Tests..."
-                    sudo docker run --rm \
+                    docker run --rm \
                         --network=ci-network \
                         -e BASE_URL="http://user-frontend-ci:5173" \
                         selenium-tests
@@ -61,7 +61,7 @@ pipeline {
 
         stage('Show Logs') {
             steps {
-                sh 'sudo docker-compose logs --tail=100'
+                sh 'docker-compose logs --tail=100'
             }
         }
     }
@@ -73,7 +73,7 @@ pipeline {
                 mail (
                     subject: "Tests PASSED: ${env.JOB_NAME} [${env.BUILD_NUMBER}]",
                     body: "All tests passed.\nBuild: ${env.BUILD_URL}",
-                    to: "mdaud9062@gmail.com,qasimalik@gmail.com"
+                    to: "mdaud9062@gmail.com"
                 )
             }
         }
@@ -83,7 +83,7 @@ pipeline {
                 mail (
                     subject: "Tests FAILED: ${env.JOB_NAME} [${env.BUILD_NUMBER}]",
                     body: "Tests failed.\nBuild: ${env.BUILD_URL}",
-                    to: "mdaud9062@gmail.com,qasimalik@gmail.com"
+                    to: "mdaud9062@gmail.com"
                 )
             }
         }
