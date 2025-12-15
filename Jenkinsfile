@@ -27,7 +27,28 @@ pipeline {
                 sh 'docker ps'
             }
         }
-
+        post {
+        success {
+            script {
+                echo "✅ CI Build Completed Successfully!"
+                mail (
+                    subject: "Tests PASSED: ${env.JOB_NAME} [${env.BUILD_NUMBER}]",
+                    body: "All tests passed.\nBuild: ${env.BUILD_URL}",
+                    to: "mdaud9062@gmail.com"
+                )
+            }
+        }
+        failure {
+            script {
+                echo "❌ Build Failed. Check logs."
+                mail (
+                    subject: "Tests FAILED: ${env.JOB_NAME} [${env.BUILD_NUMBER}]",
+                    body: "Tests failed.\nBuild: ${env.BUILD_URL}",
+                    to: "mdaud9062@gmail.com"
+                )
+            }
+        }
+    }    
         stage('Wait for Frontend to Start') {
             steps {
                 script {
@@ -66,26 +87,5 @@ pipeline {
         }
     }
 
-    post {
-        success {
-            script {
-                echo "✅ CI Build Completed Successfully!"
-                mail (
-                    subject: "Tests PASSED: ${env.JOB_NAME} [${env.BUILD_NUMBER}]",
-                    body: "All tests passed.\nBuild: ${env.BUILD_URL}",
-                    to: "mdaud9062@gmail.com"
-                )
-            }
-        }
-        failure {
-            script {
-                echo "❌ Build Failed. Check logs."
-                mail (
-                    subject: "Tests FAILED: ${env.JOB_NAME} [${env.BUILD_NUMBER}]",
-                    body: "Tests failed.\nBuild: ${env.BUILD_URL}",
-                    to: "mdaud9062@gmail.com"
-                )
-            }
-        }
-    }
+    
 }
