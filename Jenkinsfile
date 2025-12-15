@@ -16,8 +16,8 @@ pipeline {
         stage('Build & Run Main Containers') {
             steps {
                 sh '''
-                sudo docker compose down || true
-                sudo docker compose up -d --build
+                sudo docker-compose down || true
+                sudo docker-compose up -d --build
                 '''
             }
         }
@@ -61,7 +61,7 @@ pipeline {
 
         stage('Show Logs') {
             steps {
-                sh 'sudo docker compose logs --tail=100'
+                sh 'sudo docker-compose logs --tail=100'
             }
         }
     }
