@@ -2,7 +2,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException
+from selenium.common.exceptions import TimeoutException, WebDriverException, InvalidSessionIdException
 import time
 import os
 
@@ -37,19 +37,51 @@ os.makedirs("screenshots", exist_ok=True)
 
 
 def run_test(test_name, test_func):
-    """Run a test in its own browser instance and continue even if it fails"""
-    driver = None
-    try:
-        driver = create_driver()
-        wait = WebDriverWait(driver, 15)
-        test_func(driver, wait)
-        print(f"[PASS] {test_name}")
-    except Exception as e:
-        print(f"[FAIL] {test_name} - Message: {e}")
-    finally:
-        if driver:
+    """Run a test in its own browser instance and retry on transient browser crashes.
+    Saves a screenshot on failure."""
+    max_attempts = 2
+
+    for attempt in range(1, max_attempts + 1):
+        driver = None
+        try:
+            driver = create_driver()
+            wait = WebDriverWait(driver, 15)
+            test_func(driver, wait)
+            print(f"[PASS] {test_name}")
+            break
+        except Exception as e:
+            # Try to capture a screenshot for debugging
+            ts = int(time.time())
+            safe_name = test_name.replace(' ', '_').replace('/', '_')
+            screenshot_path = f"screenshots/{safe_name}_attempt{attempt}_{ts}.png"
             try:
-                driver.quit()
+                if driver:
+                    driver.save_screenshot(screenshot_path)
+                    print(f"Saved screenshot: {screenshot_path}")
+            except Exception as se:
+                print(f"Could not save screenshot: {se}")
+
+            print(f"[FAIL] {test_name} (attempt {attempt}/{max_attempts}) - Message: {e}")
+
+            # If this looks like a transient browser crash, retry (if we have attempts left)
+            err_text = str(e).lower()
+            is_transient = isinstance(e, (WebDriverException, InvalidSessionIdException)) or 'not connected to devtools' in err_text or 'invalid session id' in err_text
+
+            if attempt < max_attempts and is_transient:
+                print(f"Transient browser error detected, retrying {test_name} (attempt {attempt+1}/{max_attempts})...")
+                try:
+                    if driver:
+                        driver.quit()
+                except Exception:
+                    pass
+                time.sleep(1)
+                continue
+            else:
+                break
+        finally:
+            try:
+                if driver:
+                    driver.quit()
             except Exception:
                 pass
 
@@ -196,5 +228,5 @@ all_tests = [
 for name, func in all_tests:
     run_test(name, func)
 
-driver.quit()
 print("All test steps completed. Screenshots saved in 'screenshots/' folder.")
+
