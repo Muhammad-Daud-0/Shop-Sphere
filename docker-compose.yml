@@ -1,10 +1,7 @@
-version: "3.9"
-
 services:
 
   backend-ci:
     image: node:20
-    container_name: backend-ci
     working_dir: /app
     volumes:
       - ./server:/app
@@ -20,7 +17,6 @@ services:
 
   user-frontend-ci:
     image: node:20
-    container_name: user-frontend-ci
     working_dir: /app
     volumes:
       - ./client:/app
@@ -33,5 +29,4 @@ services:
       - backend-ci  
 networks:
   ci-network:
-    name: ci-network      
-    driver: bridge
+    external: true
