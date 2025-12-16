@@ -58,7 +58,7 @@ pipeline {
                     echo "Building Selenium Test Image..."
                     docker build -t selenium-tests .
                     echo "Running Selenium Tests..."
-                    docker run --rm \
+                    docker run --rm --shm-size=1g \
                         --network=ci-network \
                         -e BASE_URL="http://user-frontend-ci:5173" \
                         selenium-tests
@@ -81,7 +81,7 @@ pipeline {
                     mail (
                         subject: "Tests PASSED: ${env.JOB_NAME} [${env.BUILD_NUMBER}]",
                         body: "All tests passed.\nBuild: ${env.BUILD_URL}",
-                        to: "mdaud9062@gmail.com"
+                        to: "mdaud9062@gmail.com","daud90621@gmail.com"
                     )
                 } catch (err) {
                     echo "Warning: failed to send mail: ${err}"

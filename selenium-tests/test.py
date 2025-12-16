@@ -24,8 +24,9 @@ def create_driver():
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--disable-extensions")
-    options.add_argument("--no-zygote")
-    options.add_argument("--single-process")
+    # Use a remote debugging port - helps Chrome run reliably in containerized environments
+    options.add_argument("--remote-debugging-port=9222")
+    # Avoid using --single-process and --no-zygote which can make Chrome unstable in some images
 
     service = Service(ChromeDriverManager().install())
     driver = webdriver.Chrome(service=service, options=options)
