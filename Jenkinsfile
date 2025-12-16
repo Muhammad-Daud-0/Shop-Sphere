@@ -81,7 +81,7 @@ pipeline {
                     mail (
                         subject: "Tests PASSED: ${env.JOB_NAME} [${env.BUILD_NUMBER}]",
                         body: "All tests passed.\nBuild: ${env.BUILD_URL}",
-                        to: "mdaud9062@gmail.com","daud90621@gmail.com"
+                        to: "mdaud9062@gmail.com, daud90621@gmail.com"
                     )
                 } catch (err) {
                     echo "Warning: failed to send mail: ${err}"
