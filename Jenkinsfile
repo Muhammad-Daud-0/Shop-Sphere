@@ -33,8 +33,16 @@ pipeline {
                 script {
                     sh '''
                     echo "Waiting for user-frontend-ci (5173) to be ready..."
-                    while ! sudo docker run --rm --network=ci-network busybox nc -z user-frontend-ci 5173; do
-                        echo "Frontend not ready... retrying..."
+                    MAX_RETRIES=60
+                    COUNT=0
+                    until docker run --rm --network=ci-network busybox sh -c "nc -z user-frontend-ci 5173" >/dev/null 2>&1; do
+                        COUNT=$((COUNT+1))
+                        if [ $COUNT -ge $MAX_RETRIES ]; then
+                            echo "Timeout waiting for frontend after ${MAX_RETRIES} retries"
+                            docker compose logs --tail=200 user-frontend-ci || true
+                            exit 1
+                        fi
+                        echo "Frontend not ready... retrying ($COUNT/$MAX_RETRIES)"
                         sleep 2
                     done
                     echo "Frontend is UP!"
