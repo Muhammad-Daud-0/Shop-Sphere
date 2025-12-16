@@ -33,7 +33,7 @@ def run_test(test_name, test_func):
 # ================= TEST FUNCTIONS ================= #
 
 def test_user_registration():
-    driver.get("http://56.228.10.118:3005/register")
+    driver.get("http://13.201.23.88:3005/register")
     wait.until(EC.presence_of_element_located((By.ID, "name"))).send_keys("Test User")
     email_value = f"testuser_{int(time.time())}@example.com"
     driver.find_element(By.ID, "email").send_keys(email_value)
@@ -44,20 +44,20 @@ def test_user_registration():
     driver.execute_script("document.querySelector('button[type=submit]').click();")
     time.sleep(2)
 
-    assert driver.current_url.startswith("http://56.228.10.118:3005/"), f"Unexpected URL: {driver.current_url}"
+    assert driver.current_url.startswith("http://13.201.23.88:3005/"), f"Unexpected URL: {driver.current_url}"
 
 def test_register_invalid_email():
-    driver.get("http://56.228.10.118:3005/register")
+    driver.get("http://13.201.23.88:3005/register")
     wait.until(EC.presence_of_element_located((By.ID, "name"))).send_keys("Test User")
     driver.find_element(By.ID, "email").send_keys("invalid-email")
     driver.find_element(By.ID, "password").send_keys("Password123!")
     driver.execute_script("document.querySelector('button[type=submit]').click();")
     time.sleep(2)
 
-    assert driver.current_url == "http://56.228.10.118:3005/register"
+    assert driver.current_url == "http://13.201.23.88:3005/register"
 
 def test_register_weak_password():
-    driver.get("http://56.228.10.118:3005/register")
+    driver.get("http://13.201.23.88:3005/register")
     wait.until(EC.presence_of_element_located((By.ID, "name"))).send_keys("Test User")
     email_value = f"weakpass_{int(time.time())}@example.com"
     driver.find_element(By.ID, "email").send_keys(email_value)
@@ -65,10 +65,10 @@ def test_register_weak_password():
     driver.execute_script("document.querySelector('button[type=submit]').click();")
     time.sleep(2)
 
-    assert driver.current_url == "http://56.228.10.118:3005/register"
+    assert driver.current_url == "http://13.201.23.88:3005/register"
 
 def test_user_login():
-    driver.get("http://56.228.10.118:3005/register")
+    driver.get("http://13.201.23.88:3005/register")
     wait.until(EC.presence_of_element_located((By.ID, "name"))).send_keys("Login Test User")
     email_value = f"logintest_{int(time.time())}@example.com"
     password_value = "Password123!"
@@ -80,19 +80,19 @@ def test_user_login():
     driver.execute_script("document.querySelector('button[type=submit]').click();")
     time.sleep(2)
 
-    assert driver.current_url.startswith("http://56.228.10.118:3005/"), f"Unexpected URL: {driver.current_url}"
+    assert driver.current_url.startswith("http://13.201.23.88:3005/"), f"Unexpected URL: {driver.current_url}"
 
     # Login with the same user
-    driver.get("http://56.228.10.118:3005/login")
+    driver.get("http://13.201.23.88:3005/login")
     wait.until(EC.presence_of_element_located((By.ID, "email"))).send_keys(email_value)
     driver.find_element(By.ID, "password").send_keys("Password123!")
     driver.execute_script("document.querySelector('button[type=submit]').click();")
     time.sleep(2)
    
-    assert driver.current_url.startswith("http://56.228.10.118:3005/"), f"Unexpected URL: {driver.current_url}"
+    assert driver.current_url.startswith("http://13.201.23.88:3005/"), f"Unexpected URL: {driver.current_url}"
 
 def test_user_login_invalid_credentials():
-    driver.get("http://56.228.10.118:3005/login")
+    driver.get("http://13.201.23.88:3005/login")
 
     wait = WebDriverWait(driver, 20)
 
@@ -106,11 +106,11 @@ def test_user_login_invalid_credentials():
 
 
     # Assert still on login page
-    assert driver.current_url.startswith("http://56.228.10.118:3005/forgot-password"), \
+    assert driver.current_url.startswith("http://13.201.23.88:3005/forgot-password"), \
         f"User should stay on login page, but got: {driver.current_url}"
 
 def test_browse_products():
-    driver.get("http://56.228.10.118:3005/dashboard/products")
+    driver.get("http://13.201.23.88:3005/dashboard/products")
     try:
         wait.until(EC.invisibility_of_element_located((By.CSS_SELECTOR, ".animate-spin")))
     except TimeoutException:
@@ -122,7 +122,7 @@ def test_browse_products():
     assert products[0].text.strip() != ""
 
 def test_browse_categories():
-    driver.get("http://56.228.10.118:3005/dashboard/categories")
+    driver.get("http://13.201.23.88:3005/dashboard/categories")
     try:
         wait.until(EC.invisibility_of_element_located((By.CSS_SELECTOR, ".animate-spin")))
     except TimeoutException:
@@ -133,12 +133,12 @@ def test_browse_categories():
     assert len(categories) > 0
 
 def test_add_to_cart():
-    driver.get("http://56.228.10.118:3005/dashboard/products")
+    driver.get("http://13.201.23.88:3005/dashboard/products")
     try:
         wait.until(EC.invisibility_of_element_located((By.CSS_SELECTOR, ".animate-spin")))
     except TimeoutException:
         pass
-
+    
     product_card = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, ".product-card")))
     cart_btn = product_card.find_element(By.CSS_SELECTOR, ".add-to-cart")
     driver.execute_script("arguments[0].scrollIntoView(true);", cart_btn)
@@ -147,7 +147,7 @@ def test_add_to_cart():
 
 
 def test_view_cart():
-    driver.get("http://56.228.10.118:3005/dashboard/cart")
+    driver.get("http://13.201.23.88:3005/dashboard/cart")
     try:
         wait.until(EC.invisibility_of_element_located((By.CSS_SELECTOR, ".animate-spin")))
     except TimeoutException:
