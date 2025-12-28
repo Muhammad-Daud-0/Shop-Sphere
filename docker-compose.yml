@@ -1,0 +1,24 @@
+services:
+  backend:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: backend_ci
+    ports:
+      - "4000:3000"
+    environment:
+      - PORT=3000
+      - JWT_SECRETKEY=chintapaktamtam
+      - MONGODB_URI=mongodb+srv://mdaud9062_db_user:OWMPP19JHAFBAzSO@shop-sphere.pwtcm1s.mongodb.net/?retryWrites=true&w=majority&appName=Shop-Sphere
+    restart: always
+
+  frontend:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: frontend_ci
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    restart: always
